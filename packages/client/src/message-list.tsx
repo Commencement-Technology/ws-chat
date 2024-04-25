@@ -1,13 +1,7 @@
 import { useEffect, useState } from 'react';
-import { Message } from './message';
+import { MessageText } from './message-text';
 import styled from 'styled-components';
-
-export interface Message {
-  readonly id: string;
-  readonly content: string;
-  readonly created: string;
-  readonly userId: string;
-}
+import type { Message } from './types';
 
 const List = styled.ul`
   list-style-type: none;
@@ -38,7 +32,7 @@ export const MessageList = ({ userId }: { userId: string }) => {
   return (
     <List>
       {messages.map((message) => (
-        <Message message={message} myUserId={userId} />
+        <MessageText message={message} myUserId={userId} />
       ))}
     </List>
   );

@@ -10,16 +10,11 @@ export interface User {
   readonly created: string;
 }
 
-export type UserDetails = Pick<User, 'id' | 'email' | 'name'>;
-
 export type CreateUserInput = Pick<User, 'email' | 'name' | 'password'>;
 
 export type LoginUserInput = Pick<User, 'email' | 'password'>;
 
-export const insertUser = async (
-  { db }: Context,
-  userData: CreateUserInput,
-): Promise<UserDetails | null> => {
+export const insertUser = async ({ db }: Context, userData: CreateUserInput): Promise<string> => {
   try {
     const userId = uuid();
     const hashedPassword = bcrypt.hashSync(userData.password);
@@ -30,10 +25,11 @@ export const insertUser = async (
       rows: [user],
     } = await db.query<User>(sql, values);
 
-    return user;
+    if (user) return 'ok';
+    return 'failed';
   } catch (error) {
     console.error(error);
-    return null;
+    return 'failed';
   }
 };
 

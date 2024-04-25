@@ -42,11 +42,19 @@ app.post('/messages', async (req: Request, res: Response) => {
 
 // eslint-disable-next-line @typescript-eslint/no-misused-promises
 app.post('/user/new', async (req: Request, res: Response) => {
-  const user = await createUser({ db }, req.body as CreateUserInput);
-  if (user) {
-    res.status(200).send(user);
+  try {
+    const result = await createUser({ db }, req.body as CreateUserInput);
+
+    res.status(200).send(result);
+    return;
+  } catch (err) {
+    if (err instanceof Error) {
+      res.status(500).send({ error: err.message });
+      return;
+    }
+    res.status(500).send({ error: 'Unexpected error' });
+    return;
   }
-  res.status(500).send();
 });
 
 // eslint-disable-next-line @typescript-eslint/no-misused-promises

@@ -1,5 +1,5 @@
 import { styled } from 'styled-components';
-import { Message as MessageType } from './message-list';
+import type { Message } from './types';
 
 const StyledTextMe = styled.p`
   background-color: lightcoral;
@@ -18,7 +18,7 @@ const StyledTextThem = styled.p`
   margin-left: 4em;
 `;
 
-export const Message = ({ message, myUserId }: { message: MessageType; myUserId: string }) => {
+export const MessageText = ({ message, myUserId }: { message: Message; myUserId: string }) => {
   return (
     <>
       {message.userId === myUserId ? (

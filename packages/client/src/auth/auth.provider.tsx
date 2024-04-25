@@ -5,6 +5,7 @@ import { AuthContext } from './auth.context';
 //   email: string;
 //   password: string;
 // }
+
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
   // const [user, setUser] = useState(null);
   // const [token, setToken] = useState(localStorage.getItem('site') || '');
