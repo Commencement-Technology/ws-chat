@@ -1,20 +1,19 @@
 import { v4 as uuid } from 'uuid';
+import jwt, { Secret } from 'jsonwebtoken';
 import { Context } from '../db/connection';
 import bcrypt from 'bcryptjs';
+import type { User, UserDetails } from '@ws-chat/common/src/index';
 
-export interface User {
-  readonly id: string;
-  readonly email: string;
-  readonly name: string;
-  readonly password: string;
-  readonly created: string;
-}
+const SECRET_KEY: Secret = 'your-secret-key-here';
 
 export type CreateUserInput = Pick<User, 'email' | 'name' | 'password'>;
 
 export type LoginUserInput = Pick<User, 'email' | 'password'>;
 
-export const insertUser = async ({ db }: Context, userData: CreateUserInput): Promise<string> => {
+export const insertUser = async (
+  { db }: Context,
+  userData: CreateUserInput,
+): Promise<UserDetails | null> => {
   try {
     const userId = uuid();
     const hashedPassword = bcrypt.hashSync(userData.password);
@@ -25,11 +24,11 @@ export const insertUser = async ({ db }: Context, userData: CreateUserInput): Pr
       rows: [user],
     } = await db.query<User>(sql, values);
 
-    if (user) return 'ok';
-    return 'failed';
+    if (user) return { id: user.id, email: user.email, name: user.name };
+    return null;
   } catch (error) {
     console.error(error);
-    return 'failed';
+    return null;
   }
 };
 
@@ -50,16 +49,28 @@ const getUserByEmail = async ({ db }: Context, userEmail: string): Promise<User 
   }
 };
 
-export const loginUser = async ({ db }: Context, userData: LoginUserInput): Promise<boolean> => {
+export const loginUser = async (
+  { db }: Context,
+  userData: LoginUserInput,
+): Promise<(UserDetails & { token: string }) | null> => {
   const { email, password } = userData;
 
-  const userOrNull = await getUserByEmail({ db }, email);
+  try {
+    const user = await getUserByEmail({ db }, email);
 
-  if (!userOrNull) return false;
+    if (!user) throw new Error();
 
-  const isPasswordMatching = bcrypt.compareSync(password, userOrNull.password);
+    const isPasswordMatching = bcrypt.compareSync(password, user.password);
 
-  if (!isPasswordMatching) return false;
+    if (!isPasswordMatching) throw new Error();
 
-  return true;
+    const token = jwt.sign({ id: user.id, name: user.name }, SECRET_KEY, {
+      expiresIn: '2 days',
+    });
+
+    return { id: user.id, email, name: user.name, token };
+  } catch (error) {
+    console.error('Login failed');
+    return null;
+  }
 };

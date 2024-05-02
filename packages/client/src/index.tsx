@@ -3,21 +3,24 @@ import 'normalize.css';
 import { StrictMode } from 'react';
 import { createRoot } from 'react-dom/client';
 import { createGlobalStyle } from 'styled-components';
-import { io } from 'socket.io-client';
+// import { io } from 'socket.io-client';
+import { Router } from './pages/router';
+import { BrowserRouter } from 'react-router-dom';
+import { AuthProvider } from './auth/auth.provider';
 
-const socket = io('ws://localhost:4000');
+// const socket = io('ws://localhost:4000');
 
-socket.io.open((err) => {
-  if (err) {
-    console.error('WebSocket error occurred');
-  } else {
-    console.log('WebSocket opened');
-  }
-});
+// socket.io.open((err) => {
+//   if (err) {
+//     console.error('WebSocket error occurred');
+//   } else {
+//     console.log('WebSocket opened');
+//   }
+// });
 
-socket.on('connect', () => {
-  console.log('WebSocket connected');
-});
+// socket.on('connect', () => {
+//   console.log('WebSocket connected');
+// });
 
 const GlobalStyles = createGlobalStyle`
   body {
@@ -30,10 +33,16 @@ const root = createRoot(document.getElementById('root') as HTMLElement);
 root.render(
   <StrictMode>
     <GlobalStyles />
-    <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', width: '20em' }}>
+    <AuthProvider>
+      <BrowserRouter>
+        <Router />
+      </BrowserRouter>
+    </AuthProvider>
+    {/* <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', width: '20em' }}>
       <h1>WebSockets with Socket.io</h1>
-      {/* <Form /> */}
-      {/* <MessageList userId={'123'}/> */}
-    </div>
+      <RegisterForm /> */}
+    {/* <Form /> */}
+    {/* <MessageList userId={'123'}/> */}
+    {/* </div> */}
   </StrictMode>,
 );

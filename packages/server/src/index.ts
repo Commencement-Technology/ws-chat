@@ -2,20 +2,21 @@ import express, { Request, Response } from 'express';
 import { MessageInput, addMessage, getAllMessages } from './messages/messages.controller';
 import { Client } from 'pg';
 import { createServer } from 'http';
-import { Server } from 'socket.io';
+// import { Server } from 'socket.io';
 import cors from 'cors';
-import { createUser } from './user/user.controller';
-import { CreateUserInput, LoginUserInput, loginUser } from './user/user.repository';
+import { createUser, logUserIn } from './user/user.controller';
+import { CreateUserInput, LoginUserInput } from './user/user.repository';
+import { auth } from './auth/auth.middleware';
 
 const app = express();
 const db = new Client();
 const server = createServer(app);
-const io = new Server(server, {
-  cors: {
-    origin: '*',
-    methods: ['GET', 'POST'],
-  },
-});
+// const io = new Server(server, {
+//   cors: {
+//     origin: '*',
+//     methods: ['GET', 'POST'],
+//   },
+// });
 
 async function clientConnect() {
   await db.connect();
@@ -32,7 +33,7 @@ app.get('/messages', async (_: Request, res: Response) => {
 });
 
 // eslint-disable-next-line @typescript-eslint/no-misused-promises
-app.post('/messages', async (req: Request, res: Response) => {
+app.post('/messages', auth, async (req: Request, res: Response) => {
   const message = await addMessage({ db }, req.body as MessageInput);
   if (message) {
     res.status(201).send(message);
@@ -59,19 +60,19 @@ app.post('/user/new', async (req: Request, res: Response) => {
 
 // eslint-disable-next-line @typescript-eslint/no-misused-promises
 app.post('/user/login', async (req: Request, res: Response) => {
-  const isUserLoggedIn = await loginUser({ db }, req.body as LoginUserInput);
+  const isUserLoggedIn = await logUserIn({ db }, req.body as LoginUserInput);
   if (isUserLoggedIn) {
     res.status(200).send(isUserLoggedIn);
   }
-  res.status(500).send();
+  res.status(500).send({ error: 'Login failed' });
 });
 
-io.on('connection', (socket) => {
-  console.log('a user connected');
-  socket.on('disconnect', () => {
-    console.log('user disconnected');
-  });
-});
+// io.on('connection', (socket) => {
+//   console.log('a user connected');
+//   socket.on('disconnect', () => {
+//     console.log('user disconnected');
+//   });
+// });
 
 void clientConnect();
 server.listen(4000, () => console.log('Server started on port 4000'));
