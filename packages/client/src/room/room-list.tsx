@@ -23,15 +23,12 @@ export const RoomList = () => {
         },
       });
       if (!res.ok) throw new Error(res.statusText);
-      console.log('RESPONSE: ', res);
       const response = (await res.json()) as RoomDetails[];
       setRooms(response);
     }
 
-    getAllRooms().catch((e) => console.log(e));
+    getAllRooms().catch((e) => console.error(e));
   }, []);
-
-  console.log('ROOMS: ', rooms);
 
   return (
     <List>

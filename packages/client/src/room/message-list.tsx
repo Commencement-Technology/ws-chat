@@ -21,7 +21,7 @@ export const MessageList = () => {
       setMessages(response);
     }
 
-    getAllMessages().catch((e) => console.log(e));
+    getAllMessages().catch((e) => console.error(e));
   }, []);
 
   // ws.onmessage = (e) => {

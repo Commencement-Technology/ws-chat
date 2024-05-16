@@ -46,8 +46,6 @@ export const getRooms = async ({ db }: Context): Promise<RoomDetails[]> => {
 
     const { rows, rowCount } = await db.query<RoomDetails>(sql);
 
-    console.log('ROWS: ', rows);
-
     return !rowCount ? [] : rows;
   } catch (error) {
     console.error(error);

@@ -79,7 +79,6 @@ export const loginUserWithToken = async (
   { db }: Context,
   data: { token: string },
 ): Promise<(UserDetails & { token: string }) | null> => {
-  console.log('IN REPO: ', data.token);
   try {
     const { token } = data;
     const decoded = jwt.verify(token, SECRET_KEY) as {
@@ -88,7 +87,6 @@ export const loginUserWithToken = async (
       iat: number;
       exp: number;
     };
-    console.log('DECODED: ', decoded);
 
     const user = await getUserByEmail({ db }, decoded.email);
 

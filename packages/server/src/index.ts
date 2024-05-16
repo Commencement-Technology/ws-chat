@@ -99,7 +99,6 @@ app.post('/user/login', async (req: Request, res: Response) => {
 // eslint-disable-next-line @typescript-eslint/no-misused-promises
 app.post('/user/verify', async (req: Request, res: Response) => {
   const userDetails = await logUserInWithToken({ db }, req.body as { token: string });
-  console.log('ENDPOINT: ', userDetails);
   if (userDetails) {
     res.status(200).send(userDetails);
     return;

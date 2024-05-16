@@ -5,7 +5,6 @@ import { Token, UserDetails } from '@ws-chat/common/src';
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [user, setUser] = useState<UserDetails | null>(null);
   const [token, setToken] = useState(localStorage.getItem('site') || '');
-  console.log('TOKEN IN AUTH PROVIDER: ', token, user);
 
   const getToken = () => {
     return localStorage.getItem('site');
