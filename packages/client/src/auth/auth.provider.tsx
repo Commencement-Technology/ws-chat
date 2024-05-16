@@ -1,51 +1,25 @@
-import { ReactNode } from 'react';
+import { ReactNode, useState } from 'react';
 import { AuthContext } from './auth.context';
-
-// interface LoginUserInput {
-//   email: string;
-//   password: string;
-// }
+import { Token, UserDetails } from '@ws-chat/common/src';
 
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
-  // const [user, setUser] = useState(null);
-  // const [token, setToken] = useState(localStorage.getItem('site') || '');
+  const [user, setUser] = useState<UserDetails | null>(null);
+  const [token, setToken] = useState(localStorage.getItem('site') || '');
 
-  const login = () => true;
-  const logout = () => true;
-  // const login = async (data: LoginUserInput) => {
-  //   try {
-  //     const response = await fetch('http://localhost:4000/user/login', {
-  //       method: 'POST',
-  //       headers: {
-  //         'Content-Type': 'application/json',
-  //       },
-  //       body: JSON.stringify(data),
-  //     });
-  //     const res = await response.json();
-  //     if (res.data) {
-  //       setUser(res.data.user);
-  //       setToken(res.token);
-  //       localStorage.setItem('site', res.token);
-  //       navigate('/dashboard');
-  //       return;
-  //     }
-  //     throw new Error(res.message);
-  //   } catch (err) {
-  //     console.error(err);
-  //   }
-  // };
+  const login = (data: UserDetails & Token) => {
+    console.log('LOGGING IN: ', data);
+    setUser({ id: data.id, name: data.name, email: data.email });
+    setToken(token);
+    localStorage.setItem('site', data.token);
+    return;
+  };
 
-  // const logout = () => {
-  // setUser(null);
-  // setToken('');
-  // localStorage.removeItem('site');
-  // };
+  const logout = (data: UserDetails) => {
+    console.log('LOGGING OUT: ', data);
+    setUser(null);
+    setToken('');
+    localStorage.removeItem('site');
+  };
 
-  const isAuthenticated = false;
-
-  return (
-    <AuthContext.Provider value={{ isAuthenticated, login, logout }}>
-      {children}
-    </AuthContext.Provider>
-  );
+  return <AuthContext.Provider value={{ user, login, logout }}>{children}</AuthContext.Provider>;
 };

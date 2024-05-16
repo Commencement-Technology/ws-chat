@@ -1,5 +1,5 @@
 import { styled } from 'styled-components';
-import type { Message } from './types';
+import type { Message } from '../types';
 
 const StyledTextMe = styled.p`
   background-color: lightcoral;

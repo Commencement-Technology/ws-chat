@@ -38,11 +38,5 @@ root.render(
         <Router />
       </BrowserRouter>
     </AuthProvider>
-    {/* <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', width: '20em' }}>
-      <h1>WebSockets with Socket.io</h1>
-      <RegisterForm /> */}
-    {/* <Form /> */}
-    {/* <MessageList userId={'123'}/> */}
-    {/* </div> */}
   </StrictMode>,
 );

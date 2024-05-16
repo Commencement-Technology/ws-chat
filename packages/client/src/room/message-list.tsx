@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { MessageText } from './message-text';
 import styled from 'styled-components';
-import type { Message } from './types';
+import type { Message } from '../types';
 
 const List = styled.ul`
   list-style-type: none;

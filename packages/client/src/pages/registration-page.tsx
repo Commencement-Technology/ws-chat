@@ -1,4 +1,4 @@
-import { PageLayout } from '../page-layout';
+import { PageLayout } from './page-layout';
 import { RegisterForm } from '../auth/register/register-form';
 
 export const RegistrationPage = () => {

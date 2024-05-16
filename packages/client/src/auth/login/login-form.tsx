@@ -2,6 +2,7 @@ import { SubmitHandler, useForm } from 'react-hook-form';
 import { LoginFormContainer } from './login-form.styles';
 import { useNavigate } from 'react-router-dom';
 import { Token, UserDetails } from '@ws-chat/common/src/index';
+import { useAuth } from '../use-auth.hook';
 
 interface LoginFormInputs {
   email: string;
@@ -10,6 +11,7 @@ interface LoginFormInputs {
 
 export const LoginForm = () => {
   const navigate = useNavigate();
+  const auth = useAuth();
   const {
     register,
     handleSubmit,
@@ -25,8 +27,9 @@ export const LoginForm = () => {
       });
       if (!res.ok) throw new Error(res.statusText);
       const response = (await res.json()) as UserDetails & Token;
-      console.log(response);
-      navigate('/');
+      auth.login(response);
+
+      navigate('/lobby');
     } catch (error) {
       console.error('Error submitting form:', error);
     }

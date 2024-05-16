@@ -27,7 +27,7 @@ app.use(express.json());
 app.use(cors());
 
 // eslint-disable-next-line @typescript-eslint/no-misused-promises
-app.get('/messages', async (_: Request, res: Response) => {
+app.get('/messages', auth, async (_: Request, res: Response) => {
   const messages = await getAllMessages({ db });
   res.send(messages);
 });
@@ -44,7 +44,8 @@ app.post('/messages', auth, async (req: Request, res: Response) => {
 // eslint-disable-next-line @typescript-eslint/no-misused-promises
 app.post('/user/new', async (req: Request, res: Response) => {
   try {
-    const result = await createUser({ db }, req.body as CreateUserInput);
+    const body = req.body as CreateUserInput;
+    const result = await createUser({ db }, body);
 
     res.status(200).send(result);
     return;
@@ -60,11 +61,13 @@ app.post('/user/new', async (req: Request, res: Response) => {
 
 // eslint-disable-next-line @typescript-eslint/no-misused-promises
 app.post('/user/login', async (req: Request, res: Response) => {
-  const isUserLoggedIn = await logUserIn({ db }, req.body as LoginUserInput);
-  if (isUserLoggedIn) {
-    res.status(200).send(isUserLoggedIn);
+  const userDetails = await logUserIn({ db }, req.body as LoginUserInput);
+  if (userDetails) {
+    res.status(200).send(userDetails);
+    return;
   }
   res.status(500).send({ error: 'Login failed' });
+  return;
 });
 
 // io.on('connection', (socket) => {

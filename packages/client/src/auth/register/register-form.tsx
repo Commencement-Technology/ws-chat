@@ -25,8 +25,8 @@ export const RegisterForm = () => {
       });
       if (!res.ok) throw new Error(res.statusText);
       const response = (await res.json()) as UserDetails;
-      console.log(response);
-      navigate('/');
+      if (!response) throw new Error('User registration failed');
+      navigate('/login');
     } catch (error) {
       console.error('Error submitting form:', error);
     }

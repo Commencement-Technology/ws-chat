@@ -1,11 +1,6 @@
+import { UserDetails } from '@ws-chat/common/src';
 import { Context } from '../db/connection';
-import {
-  CreateUserInput,
-  LoginUserInput,
-  UserDetails,
-  insertUser,
-  loginUser,
-} from './user.repository';
+import { CreateUserInput, LoginUserInput, insertUser, loginUser } from './user.repository';
 
 export const createUser = async (
   ctx: Context,

@@ -34,7 +34,7 @@ export const insertUser = async (
 
 const getUserByEmail = async ({ db }: Context, userEmail: string): Promise<User | null> => {
   try {
-    const sql = `SELECT FROM users WHERE email = $1`;
+    const sql = `SELECT * FROM users WHERE email = $1`;
     const values = [userEmail];
 
     const {
@@ -60,7 +60,7 @@ export const loginUser = async (
 
     if (!user) throw new Error();
 
-    const isPasswordMatching = bcrypt.compareSync(password, user.password);
+    const isPasswordMatching = bcrypt.compareSync(password, user.password.toString());
 
     if (!isPasswordMatching) throw new Error();
 
@@ -70,7 +70,7 @@ export const loginUser = async (
 
     return { id: user.id, email, name: user.name, token };
   } catch (error) {
-    console.error('Login failed');
+    console.error('Login failed: ', error);
     return null;
   }
 };
