@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { MessageText } from './message-text';
 import styled from 'styled-components';
-import type { Message } from '../types';
+import { Message } from '../types';
 
 const List = styled.ul`
   list-style-type: none;
@@ -10,7 +10,7 @@ const List = styled.ul`
   width: 20em;
 `;
 
-export const MessageList = ({ userId }: { userId: string }) => {
+export const MessageList = () => {
   const [messages, setMessages] = useState<Message[]>([]);
 
   useEffect(() => {
@@ -32,7 +32,7 @@ export const MessageList = ({ userId }: { userId: string }) => {
   return (
     <List>
       {messages.map((message) => (
-        <MessageText message={message} myUserId={userId} />
+        <MessageText message={message} />
       ))}
     </List>
   );

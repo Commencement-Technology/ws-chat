@@ -1,4 +1,7 @@
+import { UserDetails } from '@ws-chat/common/src';
+import { useNavigate } from 'react-router-dom';
 import { styled } from 'styled-components';
+import { useAuth } from '../auth/use-auth.hook';
 
 interface PageLayoutProps {
   children: React.ReactNode;
@@ -10,17 +13,68 @@ const PageContainer = styled.div`
   flex-direction: column;
   max-width: 50vw;
   background: lightgrey;
-  padding: 2rem;
   color: black;
+`;
+
+const NavBar = styled.div`
+  display: flex;
+  background: lightblue;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0 1rem;
+`;
+
+const ButtonGroup = styled.div`
+  display: flex;
+  gap: 4px;
+`;
+
+const LoggedInUserDetail = styled.p`
+  font-size: 0.8rem;
+  color: #222;
+`;
+
+const AuthButton = styled.button`
+  background-color: #007bff;
+  color: #fff;
+  border: none;
+  padding: 0.4rem 0.6rem;
+  cursor: pointer;
+  border-radius: 4px;
+`;
+
+const BodyContainer = styled.div`
+  padding: 2rem;
 `;
 
 export const PageLayout = (props: PageLayoutProps) => {
   const { children, heading } = props;
+  const auth = useAuth();
+  const navigate = useNavigate();
+
+  const handleLogout = (data: UserDetails | null) => {
+    if (data === auth.user) auth.logout();
+  };
 
   return (
     <PageContainer>
-      <h1>{heading}</h1>
-      {children}
+      <NavBar>
+        <h1>{heading}</h1>
+        <ButtonGroup>
+          {auth.user ? (
+            <>
+              <LoggedInUserDetail>User: {auth.user.email}</LoggedInUserDetail>
+              <AuthButton onClick={() => handleLogout(auth.user)}>Logout</AuthButton>
+            </>
+          ) : (
+            <>
+              <AuthButton onClick={() => navigate('/login')}>Login</AuthButton>
+              <AuthButton onClick={() => navigate('/register')}>Register</AuthButton>
+            </>
+          )}
+        </ButtonGroup>
+      </NavBar>
+      <BodyContainer>{children}</BodyContainer>
     </PageContainer>
   );
 };

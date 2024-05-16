@@ -18,7 +18,8 @@ CREATE TABLE IF NOT EXISTS messages
 CREATE TABLE IF NOT EXISTS rooms
 (
     id uuid PRIMARY KEY, 
-    name TEXT NOT NULL
+    name TEXT NOT NULL,
+    owner uuid REFERENCES users(id)
 );
 
 CREATE TABLE IF NOT EXISTS room_members

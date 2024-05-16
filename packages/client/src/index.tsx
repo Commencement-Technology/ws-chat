@@ -24,7 +24,10 @@ import { AuthProvider } from './auth/auth.provider';
 
 const GlobalStyles = createGlobalStyle`
   body {
-    font-family: sans-serif 
+    font-family: sans-serif;
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
   }
 `;
 

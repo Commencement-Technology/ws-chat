@@ -4,7 +4,8 @@ import { createContext } from 'react';
 interface AuthContextType {
   user: UserDetails | null;
   login: (data: UserDetails & Token) => void;
-  logout: (data: UserDetails) => void;
+  logout: () => void;
+  getToken: () => string | null;
 }
 
 export const AuthContext = createContext<AuthContextType | undefined>(undefined);

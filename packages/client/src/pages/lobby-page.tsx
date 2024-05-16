@@ -1,9 +1,9 @@
 import { Lobby } from '../lobby/lobby';
 import { PageLayout } from './page-layout';
 
-export const LoginPage = () => {
+export const LobbyPage = () => {
   return (
-    <PageLayout heading="Login">
+    <PageLayout heading="Lobby">
       <Lobby />
     </PageLayout>
   );

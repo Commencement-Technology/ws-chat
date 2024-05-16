@@ -64,11 +64,37 @@ export const loginUser = async (
 
     if (!isPasswordMatching) throw new Error();
 
-    const token = jwt.sign({ id: user.id, name: user.name }, SECRET_KEY, {
+    const token = jwt.sign({ id: user.id, email: user.email }, SECRET_KEY, {
       expiresIn: '2 days',
     });
 
     return { id: user.id, email, name: user.name, token };
+  } catch (error) {
+    console.error('Login failed: ', error);
+    return null;
+  }
+};
+
+export const loginUserWithToken = async (
+  { db }: Context,
+  data: { token: string },
+): Promise<(UserDetails & { token: string }) | null> => {
+  console.log('IN REPO: ', data.token);
+  try {
+    const { token } = data;
+    const decoded = jwt.verify(token, SECRET_KEY) as {
+      id: string;
+      email: string;
+      iat: number;
+      exp: number;
+    };
+    console.log('DECODED: ', decoded);
+
+    const user = await getUserByEmail({ db }, decoded.email);
+
+    if (!user) throw new Error();
+
+    return { id: user.id, email: user.email, name: user.name, token };
   } catch (error) {
     console.error('Login failed: ', error);
     return null;

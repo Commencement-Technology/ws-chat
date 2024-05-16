@@ -22,7 +22,7 @@ export const LoginForm = () => {
     try {
       const res = await fetch(`http://localhost:4000/user/login`, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json', Authorization: 'token' },
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(data),
       });
       if (!res.ok) throw new Error(res.statusText);
