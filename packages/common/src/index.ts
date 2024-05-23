@@ -23,8 +23,13 @@ export interface RoomDetails {
   readonly id: string;
   readonly name: string;
   readonly owner: UserId;
+}
+
+export interface MemberCount {
   readonly memberCount: number;
 }
+
+export type RoomDetailsWithMemberCount = RoomDetails & MemberCount;
 
 export type RoomId = Pick<RoomDetails, 'id'>;
 

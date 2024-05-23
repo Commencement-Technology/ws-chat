@@ -1,6 +1,11 @@
 import { Context } from '../db/connection';
 import { v4 as uuid } from 'uuid';
-import { CreateRoomInput, RoomDetails, RoomId } from '@ws-chat/common/src';
+import {
+  CreateRoomInput,
+  RoomDetails,
+  RoomDetailsWithMemberCount,
+  RoomId,
+} from '@ws-chat/common/src';
 
 export const insertRoom = async (
   { db }: Context,
@@ -36,7 +41,7 @@ export const insertRoom = async (
   }
 };
 
-export const getRooms = async ({ db }: Context): Promise<RoomDetails[]> => {
+export const getRooms = async ({ db }: Context): Promise<RoomDetailsWithMemberCount[]> => {
   try {
     const sql = `
       SELECT r.id, r.name, r.owner, count(rm.user_id) as "memberCount" FROM rooms r
@@ -44,11 +49,28 @@ export const getRooms = async ({ db }: Context): Promise<RoomDetails[]> => {
       GROUP BY r.id
     `;
 
-    const { rows, rowCount } = await db.query<RoomDetails>(sql);
+    const { rows, rowCount } = await db.query<RoomDetailsWithMemberCount>(sql);
 
     return !rowCount ? [] : rows;
   } catch (error) {
     console.error(error);
     return [];
+  }
+};
+
+export const getRoomById = async ({ db }: Context, roomId: string): Promise<RoomDetails | null> => {
+  try {
+    const sql = `
+      SELECT id, name, owner FROM rooms
+      WHERE id = $1
+    `;
+    const values = [roomId];
+
+    const { rows } = await db.query<RoomDetails>(sql, values);
+
+    return rows[0];
+  } catch (error) {
+    console.error(error);
+    return null;
   }
 };

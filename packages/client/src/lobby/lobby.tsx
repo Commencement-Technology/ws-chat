@@ -2,7 +2,8 @@ import { styled } from 'styled-components';
 import { useAuth } from '../auth/use-auth.hook';
 import { RoomDetails, RoomId } from '@ws-chat/common/src';
 import { SubmitHandler, useForm } from 'react-hook-form';
-import { RoomList } from '../room/room-list';
+import { RoomList } from './room-list';
+import { useNavigate } from 'react-router-dom';
 
 const CreateButton = styled.button`
   background-color: lightgreen;
@@ -16,6 +17,7 @@ type RoomName = Pick<RoomDetails, 'name'>;
 
 export const Lobby = () => {
   const auth = useAuth();
+  const navigate = useNavigate();
   const {
     register,
     handleSubmit,
@@ -33,10 +35,10 @@ export const Lobby = () => {
       });
       if (!res.ok) throw new Error(res.statusText);
 
-      const response = (await res.json()) as RoomId;
+      const response = (await res.json()) as RoomDetails;
       console.log('ROOM ID: ', response);
 
-      // navigate('/lobby');
+      navigate(`/lobby/room/${response.id}`);
     } catch (error) {
       console.error('Error submitting form:', error);
     }

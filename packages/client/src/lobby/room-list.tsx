@@ -1,7 +1,8 @@
-import { RoomDetails } from '@ws-chat/common/src';
+import { RoomDetailsWithMemberCount } from '@ws-chat/common/src';
 import { useEffect, useState } from 'react';
 import styled from 'styled-components';
 import { useAuth } from '../auth/use-auth.hook';
+import { useNavigate } from 'react-router-dom';
 
 const List = styled.ul`
   list-style-type: none;
@@ -11,8 +12,9 @@ const List = styled.ul`
 `;
 
 export const RoomList = () => {
-  const [rooms, setRooms] = useState<RoomDetails[]>([]);
+  const [rooms, setRooms] = useState<RoomDetailsWithMemberCount[]>([]);
   const auth = useAuth();
+  const navigate = useNavigate();
   const token = auth.getToken();
 
   useEffect(() => {
@@ -23,7 +25,7 @@ export const RoomList = () => {
         },
       });
       if (!res.ok) throw new Error(res.statusText);
-      const response = (await res.json()) as RoomDetails[];
+      const response = (await res.json()) as RoomDetailsWithMemberCount[];
       setRooms(response);
     }
 
@@ -34,7 +36,10 @@ export const RoomList = () => {
     <List>
       {rooms.map((r) => (
         <li>
-          {r.name} - {r.memberCount}
+          {r.name} (Member count: {r.memberCount})
+          <button type="button" onClick={() => navigate(`/lobby/room/${r.id}`)}>
+            Go to room
+          </button>
         </li>
       ))}
     </List>

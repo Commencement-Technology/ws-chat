@@ -7,7 +7,7 @@ import cors from 'cors';
 import { createUser, logUserIn, logUserInWithToken } from './user/user.controller';
 import { CreateUserInput, LoginUserInput } from './user/user.repository';
 import { auth } from './auth/auth.middleware';
-import { createRoom, getAllRooms } from './rooms/rooms.controller';
+import { createRoom, getAllRooms, getRoom } from './rooms/rooms.controller';
 import { CreateRoomInput } from '@ws-chat/common/src';
 
 const app = express();
@@ -65,6 +65,13 @@ app.post('/room', auth, async (req: Request, res: Response) => {
 app.get('/rooms', auth, async (_: Request, res: Response) => {
   const rooms = await getAllRooms({ db });
   res.send(rooms);
+});
+
+// eslint-disable-next-line @typescript-eslint/no-misused-promises
+app.get('/rooms/:roomId', auth, async (req: Request, res: Response) => {
+  const { roomId } = req.params;
+  const room = await getRoom({ db }, roomId);
+  res.send(room);
 });
 
 // eslint-disable-next-line @typescript-eslint/no-misused-promises
