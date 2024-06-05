@@ -20,9 +20,7 @@ export const RoomList = () => {
   useEffect(() => {
     async function getAllRooms() {
       const res = await fetch(`http://localhost:4000/rooms`, {
-        headers: {
-          Authorization: token || '',
-        },
+        headers: { Authorization: token ?? '' },
       });
       if (!res.ok) throw new Error(res.statusText);
       const response = (await res.json()) as RoomDetailsWithMemberCount[];

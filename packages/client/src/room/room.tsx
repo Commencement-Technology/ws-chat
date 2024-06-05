@@ -22,17 +22,17 @@ export const Room = () => {
   const token = auth.getToken();
 
   useEffect(() => {
-    async function getRoomDetails(authToken: string) {
+    async function getRoomDetails() {
       const res = await fetch(`http://localhost:4000/rooms/${roomId ?? ''}`, {
-        headers: { 'Content-Type': 'application/json', Authorization: authToken },
+        headers: { 'Content-Type': 'application/json', Authorization: token ?? '' },
       });
       if (!res.ok) throw new Error(res.statusText);
       const response = (await res.json()) as RoomDetails;
       setRoom(response);
     }
 
-    if (!room && token) {
-      getRoomDetails(token).catch((e) => console.error(e));
+    if (!room) {
+      getRoomDetails().catch((e) => console.error(e));
     }
 
     // async function getAllMessages() {
