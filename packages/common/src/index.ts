@@ -39,5 +39,6 @@ export interface Message {
   readonly id: string;
   readonly content: string;
   readonly created: string;
+  readonly roomId: string;
   readonly user: UserDetails;
 }
