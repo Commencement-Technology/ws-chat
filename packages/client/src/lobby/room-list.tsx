@@ -33,7 +33,7 @@ export const RoomList = () => {
   return (
     <List>
       {rooms.map((r) => (
-        <li>
+        <li key={r.id}>
           {r.name} (Member count: {r.memberCount})
           <button type="button" onClick={() => navigate(`/lobby/room/${r.id}`)}>
             Go to room

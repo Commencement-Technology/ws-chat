@@ -15,8 +15,8 @@ export const insertMessage = async (
 ): Promise<Message | null> => {
   try {
     const messageId = uuid();
-    const sql = `INSERT INTO messages (id, content, user_id) VALUES($1, $2, $3) RETURNING *`;
-    const values = [messageId, message.content, message.userId];
+    const sql = `INSERT INTO messages (id, content, user_id, room_id) VALUES($1, $2, $3, $4) RETURNING *`;
+    const values = [messageId, message.content, message.userId, message.roomId];
 
     const {
       rows: [msg],
@@ -29,11 +29,12 @@ export const insertMessage = async (
   }
 };
 
-export const getMessages = async ({ db }: Context): Promise<Message[]> => {
+export const getMessages = async ({ db }: Context, roomId: string): Promise<Message[]> => {
   try {
-    const sql = `SELECT id, content, created, user_id as "userId" FROM messages`;
+    const sql = `SELECT id, content, created, user_id as "userId" FROM messages WHERE room_id = $1`;
+    const values = [roomId];
 
-    const { rows, rowCount } = await db.query<Message>(sql);
+    const { rows, rowCount } = await db.query<Message>(sql, values);
 
     return !rowCount ? [] : rows;
   } catch (error) {

@@ -1,5 +1,5 @@
 import express, { Request, Response } from 'express';
-import { MessageInput, addMessage, getAllMessages } from './messages/messages.controller';
+import { MessageInput, addMessage, getMessagesByRoom } from './messages/messages.controller';
 import { Client } from 'pg';
 import { createServer } from 'http';
 // import { Server } from 'socket.io';
@@ -29,8 +29,14 @@ app.use(express.json());
 app.use(cors());
 
 // eslint-disable-next-line @typescript-eslint/no-misused-promises
-app.get('/messages', auth, async (_: Request, res: Response) => {
-  const messages = await getAllMessages({ db });
+app.get('/messages', auth, async (req: Request, res: Response) => {
+  console.log('RoomId: ', req.params);
+  const { roomId } = req.params;
+  if (!roomId) {
+    res.sendStatus(404).send('Room not found');
+    return;
+  }
+  const messages = await getMessagesByRoom({ db }, roomId);
   res.send(messages);
 });
 

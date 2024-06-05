@@ -1,18 +1,28 @@
+/* eslint-disable @typescript-eslint/no-misused-promises */
 import { FormEvent, useState } from 'react';
+import { useAuth } from '../auth/use-auth.hook';
+import { useParams } from 'react-router-dom';
 
-const createMessage = (input: string, userId: string) => ({
-  content: input,
-  userId,
-});
-
-export const Form = ({ userId }: { userId: string }) => {
+export const MessageForm = () => {
+  const { roomId } = useParams();
+  const auth = useAuth();
   const [input, setInput] = useState('');
+  const token = auth.getToken();
 
-  const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     if (!input) return;
-    createMessage(input, userId);
-    setInput('');
+    try {
+      await fetch(`http://localhost:4000/messages`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', Authorization: token ?? '' },
+        body: JSON.stringify({ content: input, userId: auth.user?.id, roomId }),
+      });
+
+      setInput('');
+    } catch (err) {
+      console.error('Error sending message:', err);
+    }
   };
 
   return (
