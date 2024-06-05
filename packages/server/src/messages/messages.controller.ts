@@ -1,5 +1,6 @@
-import { Message, getMessages, insertMessage } from './messages.repository';
+import { getMessages, insertMessage } from './messages.repository';
 import { Context } from '../db/connection';
+import { Message } from '@ws-chat/common/src';
 
 export interface MessageInput {
   content: string;

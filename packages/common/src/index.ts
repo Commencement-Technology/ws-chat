@@ -34,3 +34,10 @@ export type RoomDetailsWithMemberCount = RoomDetails & MemberCount;
 export type RoomId = Pick<RoomDetails, 'id'>;
 
 export type CreateRoomInput = Pick<RoomDetails, 'name' | 'owner'>;
+
+export interface Message {
+  readonly id: string;
+  readonly content: string;
+  readonly created: string;
+  readonly user: UserDetails;
+}

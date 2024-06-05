@@ -1,5 +1,5 @@
+import { Message } from '@ws-chat/common/src';
 import { styled } from 'styled-components';
-import { Message } from '../types';
 
 const StyledMessage = styled.p`
   background-color: lightseagreen;
@@ -12,9 +12,10 @@ const StyledMessage = styled.p`
 export const MessageText = ({ message }: { message: Message }) => {
   return (
     <>
-      <StyledMessage key={message.id}>
-        {message.userId}: {message.content}
-      </StyledMessage>
+      message goes here
+      {/* <StyledMessage key={message.id}>
+        {message.user.name}: {message.content}
+      </StyledMessage> */}
     </>
   );
 };

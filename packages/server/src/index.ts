@@ -29,18 +29,6 @@ app.use(express.json());
 app.use(cors());
 
 // eslint-disable-next-line @typescript-eslint/no-misused-promises
-app.get('/messages', auth, async (req: Request, res: Response) => {
-  console.log('RoomId: ', req.params);
-  const { roomId } = req.params;
-  if (!roomId) {
-    res.sendStatus(404).send('Room not found');
-    return;
-  }
-  const messages = await getMessagesByRoom({ db }, roomId);
-  res.send(messages);
-});
-
-// eslint-disable-next-line @typescript-eslint/no-misused-promises
 app.post('/messages', auth, async (req: Request, res: Response) => {
   const message = await addMessage({ db }, req.body as MessageInput);
   if (message) {
@@ -77,6 +65,14 @@ app.get('/rooms', auth, async (_: Request, res: Response) => {
 app.get('/rooms/:roomId', auth, async (req: Request, res: Response) => {
   const { roomId } = req.params;
   const room = await getRoom({ db }, roomId);
+  res.send(room);
+});
+
+// eslint-disable-next-line @typescript-eslint/no-misused-promises
+app.get('/rooms/:roomId/messages', auth, async (req: Request, res: Response) => {
+  const { roomId } = req.params;
+  console.log('HANDLER: ', roomId);
+  const room = await getMessagesByRoom({ db }, roomId);
   res.send(room);
 });
 

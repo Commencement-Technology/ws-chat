@@ -36,7 +36,6 @@ export const Lobby = () => {
       if (!res.ok) throw new Error(res.statusText);
 
       const response = (await res.json()) as RoomDetails;
-      console.log('ROOM ID: ', response);
 
       navigate(`/lobby/room/${response.id}`);
     } catch (error) {
