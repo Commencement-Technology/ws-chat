@@ -74,6 +74,7 @@ export const getMessages = async ({ db }: Context, roomId: string): Promise<Mess
       FROM messages m
       INNER JOIN users u ON m.user_id = u.id
       WHERE m.room_id = $1
+      ORDER BY m.created ASC
       `;
     const values = [roomId];
 

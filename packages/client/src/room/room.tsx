@@ -35,22 +35,22 @@ export const Room = () => {
       getRoomDetails().catch((e) => console.error(e));
     }
 
-    // async function getAllMessages() {
-    //   try {
-    //     if (!roomId) throw new Error('Room ID missing');
-    //     console.log('Room Id in client: ', roomId);
-    //     const res = await fetch(`http://localhost:4000/rooms/${roomId}/messages`, {
-    //       headers: { 'Content-Type': 'application/json', Authorization: token ?? '' },
-    //     });
-    //     if (!res.ok) throw new Error(res.statusText);
-    //     const response = (await res.json()) as Message[];
-    //     setMessages(response);
-    //   } catch (err) {
-    //     console.error('Failed to get messages', err);
-    //   }
-    // }
+    async function getAllMessages() {
+      try {
+        if (!roomId) throw new Error('Room ID missing');
+        console.log('Room Id in client: ', roomId);
+        const res = await fetch(`http://localhost:4000/rooms/${roomId}/messages`, {
+          headers: { 'Content-Type': 'application/json', Authorization: token ?? '' },
+        });
+        if (!res.ok) throw new Error(res.statusText);
+        const response = (await res.json()) as Message[];
+        setMessages(response);
+      } catch (err) {
+        console.error('Failed to get messages', err);
+      }
+    }
 
-    // getAllMessages().catch((e) => console.error(e));
+    getAllMessages().catch((e) => console.error(e));
   }, []);
 
   // ws.onmessage = (e) => {
