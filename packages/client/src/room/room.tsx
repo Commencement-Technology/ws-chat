@@ -5,6 +5,8 @@ import { useNavigate, useParams } from 'react-router-dom';
 import { Message, RoomDetails } from '@ws-chat/common/src';
 import { useAuth } from '../auth/use-auth.hook';
 import { MessageForm } from './form';
+import { socket } from '..';
+import { PageLayout } from '../pages/page-layout';
 
 const List = styled.ul`
   list-style-type: none;
@@ -20,6 +22,11 @@ export const Room = () => {
   const navigate = useNavigate();
   const auth = useAuth();
   const token = auth.getToken();
+
+  socket.on('chat message', (msg: string) => {
+    const newMessage = JSON.parse(msg) as Message;
+    setMessages([...messages, newMessage]);
+  });
 
   useEffect(() => {
     async function getRoomDetails() {
@@ -38,7 +45,6 @@ export const Room = () => {
     async function getAllMessages() {
       try {
         if (!roomId) throw new Error('Room ID missing');
-        console.log('Room Id in client: ', roomId);
         const res = await fetch(`http://localhost:4000/rooms/${roomId}/messages`, {
           headers: { 'Content-Type': 'application/json', Authorization: token ?? '' },
         });
@@ -52,22 +58,18 @@ export const Room = () => {
 
     getAllMessages().catch((e) => console.error(e));
   }, []);
-
-  // ws.onmessage = (e) => {
-  //   const msgObject = JSON.parse(e.data as string) as Message;
-  //   setMessages([...messages, msgObject]);
-  // };
-
   return (
-    <List>
-      <button type="button" onClick={() => navigate('/lobby')}>
-        Back to Lobby
-      </button>
-      <h1>Room: {room?.name}</h1>
-      <MessageForm />
-      {messages.map((message) => (
-        <MessageText key={message.id} message={message} />
-      ))}
-    </List>
+    <PageLayout heading={`Room: ${room?.name ? room.name : 'error'}`}>
+      <List>
+        <button type="button" onClick={() => navigate('/lobby')}>
+          Back to Lobby
+        </button>
+        <h1>Room: {room?.name}</h1>
+        <MessageForm />
+        {messages.map((message) => (
+          <MessageText key={message.id} message={message} />
+        ))}
+      </List>
+    </PageLayout>
   );
 };

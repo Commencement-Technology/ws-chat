@@ -53,7 +53,6 @@ export const insertMessage = async (
       },
     };
 
-    console.log('MESSAGE RES: ', msg);
     return formattedResponse;
   } catch (error) {
     console.error(error);

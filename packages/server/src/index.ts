@@ -2,7 +2,7 @@ import express, { Request, Response } from 'express';
 import { MessageInput, addMessage, getMessagesByRoom } from './messages/messages.controller';
 import { Client } from 'pg';
 import { createServer } from 'http';
-// import { Server } from 'socket.io';
+import { Server } from 'socket.io';
 import cors from 'cors';
 import { createUser, logUserIn, logUserInWithToken } from './user/user.controller';
 import { CreateUserInput, LoginUserInput } from './user/user.repository';
@@ -13,12 +13,12 @@ import { CreateRoomInput } from '@ws-chat/common/src';
 const app = express();
 const db = new Client();
 const server = createServer(app);
-// const io = new Server(server, {
-//   cors: {
-//     origin: '*',
-//     methods: ['GET', 'POST'],
-//   },
-// });
+const io = new Server(server, {
+  cors: {
+    origin: '*',
+    methods: ['GET', 'POST'],
+  },
+});
 
 async function clientConnect() {
   await db.connect();
@@ -31,6 +31,7 @@ app.use(cors());
 // eslint-disable-next-line @typescript-eslint/no-misused-promises
 app.post('/messages', auth, async (req: Request, res: Response) => {
   const message = await addMessage({ db }, req.body as MessageInput);
+  io.emit('chat message', JSON.stringify(message));
   if (message) {
     res.status(201).send(message);
   }
@@ -71,7 +72,6 @@ app.get('/rooms/:roomId', auth, async (req: Request, res: Response) => {
 // eslint-disable-next-line @typescript-eslint/no-misused-promises
 app.get('/rooms/:roomId/messages', auth, async (req: Request, res: Response) => {
   const { roomId } = req.params;
-  console.log('HANDLER: ', roomId);
   const room = await getMessagesByRoom({ db }, roomId);
   res.send(room);
 });
@@ -116,12 +116,12 @@ app.post('/user/verify', async (req: Request, res: Response) => {
   return;
 });
 
-// io.on('connection', (socket) => {
-//   console.log('a user connected');
-//   socket.on('disconnect', () => {
-//     console.log('user disconnected');
-//   });
-// });
+io.on('connection', (socket) => {
+  console.log('a user connected');
+  socket.on('disconnect', () => {
+    console.log('user disconnected');
+  });
+});
 
 void clientConnect();
 server.listen(4000, () => console.log('Server started on port 4000'));

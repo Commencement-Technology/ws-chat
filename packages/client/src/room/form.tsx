@@ -13,12 +13,13 @@ export const MessageForm = () => {
     e.preventDefault();
     if (!input) return;
     try {
+      const body = JSON.stringify({ content: input, userId: auth.user?.id, roomId });
+
       await fetch(`http://localhost:4000/messages`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json', Authorization: token ?? '' },
-        body: JSON.stringify({ content: input, userId: auth.user?.id, roomId }),
+        body,
       });
-
       setInput('');
     } catch (err) {
       console.error('Error sending message:', err);
