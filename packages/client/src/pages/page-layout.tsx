@@ -11,9 +11,8 @@ interface PageLayoutProps {
 const PageContainer = styled.div`
   display: flex;
   flex-direction: column;
-  max-width: 50vw;
-  background: lightgrey;
-  color: black;
+  background: #e8e7e7;
+  height: 100vh;
 `;
 
 const NavBar = styled.div`
@@ -44,7 +43,10 @@ const AuthButton = styled.button`
 `;
 
 const BodyContainer = styled.div`
-  padding: 2rem;
+  padding: 1rem;
+  display: flex;
+  flex-direction: column;
+  flex: 1 1 0;
 `;
 
 export const PageLayout = (props: PageLayoutProps) => {

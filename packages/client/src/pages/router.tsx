@@ -5,6 +5,7 @@ import { LoginPage } from './login-page';
 import { LobbyPage } from './lobby-page';
 import { useAuth } from '../auth/use-auth.hook';
 import { Room } from '../room/room';
+import { HomePage } from './home-page';
 
 const ProtectedRoute = () => {
   const auth = useAuth();
@@ -18,13 +19,12 @@ const ProtectedRoute = () => {
 export const Router = () => {
   return (
     <Routes>
+      <Route path="/" element={<HomePage />} />
       <Route path="register" element={<RegistrationPage />} />
       <Route path="login" element={<LoginPage />} />
       <Route element={<ProtectedRoute />}>
         <Route path="lobby" element={<LobbyPage />} />
         <Route path="lobby/room/:roomId" element={<Room />} />
-        {/* <Route index element={<MessageList />} /> */}
-        {/* <Route path=":id/duplicate" element={<DuplicateFlow />} /> */}
       </Route>
       <Route path="*" element={<PageNotFound />} />
     </Routes>

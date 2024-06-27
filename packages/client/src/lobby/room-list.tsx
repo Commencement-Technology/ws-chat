@@ -6,9 +6,11 @@ import { useNavigate } from 'react-router-dom';
 
 const List = styled.ul`
   list-style-type: none;
-  padding-left: 0;
-  margin-top: 2em;
-  width: 20em;
+  padding: 0;
+`;
+
+const RoomItem = styled.li`
+  padding: 0.5rem 0;
 `;
 
 export const RoomList = () => {
@@ -33,12 +35,15 @@ export const RoomList = () => {
   return (
     <List>
       {rooms.map((r) => (
-        <li key={r.id}>
-          {r.name} (Member count: {r.memberCount})
-          <button type="button" onClick={() => navigate(`/lobby/room/${r.id}`)}>
-            Go to room
-          </button>
-        </li>
+        <RoomItem key={r.id}>
+          <a
+            type="button"
+            href={`/lobby/room/${r.id}`}
+            onClick={() => navigate(`/lobby/room/${r.id}`)}
+          >
+            {r.name} (Member count: {r.memberCount})
+          </a>
+        </RoomItem>
       ))}
     </List>
   );

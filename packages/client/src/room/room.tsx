@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { MessageText } from './message-text';
 import styled from 'styled-components';
 import { useNavigate, useParams } from 'react-router-dom';
@@ -11,8 +11,24 @@ import { PageLayout } from '../pages/page-layout';
 const List = styled.ul`
   list-style-type: none;
   padding-left: 0;
-  margin-top: 2em;
-  width: 20em;
+  width: 100%;
+  margin: 0;
+`;
+
+const ChatContainer = styled.div`
+  overflow: scroll;
+  flex-grow: 1;
+  display: flex;
+  align-items: flex-end;
+`;
+
+const RoomBodyContainer = styled.div`
+  padding: 1rem;
+  display: flex;
+  flex-direction: column;
+  overflow: auto;
+  flex: 1 1 0;
+  justify-content: space-between;
 `;
 
 export const Room = () => {
@@ -28,21 +44,24 @@ export const Room = () => {
     setMessages([...messages, newMessage]);
   });
 
-  useEffect(() => {
-    async function getRoomDetails() {
-      const res = await fetch(`http://localhost:4000/rooms/${roomId ?? ''}`, {
-        headers: { 'Content-Type': 'application/json', Authorization: token ?? '' },
-      });
-      if (!res.ok) throw new Error(res.statusText);
-      const response = (await res.json()) as RoomDetails;
-      setRoom(response);
-    }
+  const getRoomDetails = useMemo(
+    () => async () => {
+      try {
+        const res = await fetch(`http://localhost:4000/rooms/${roomId ?? ''}`, {
+          headers: { 'Content-Type': 'application/json', Authorization: token ?? '' },
+        });
+        if (!res.ok) throw new Error(res.statusText);
+        const response = (await res.json()) as RoomDetails;
+        setRoom(response);
+      } catch (err) {
+        console.error(err);
+      }
+    },
+    [],
+  );
 
-    if (!room) {
-      getRoomDetails().catch((e) => console.error(e));
-    }
-
-    async function getAllMessages() {
+  const getAllMessages = useMemo(
+    () => async () => {
       try {
         if (!roomId) throw new Error('Room ID missing');
         const res = await fetch(`http://localhost:4000/rooms/${roomId}/messages`, {
@@ -54,22 +73,30 @@ export const Room = () => {
       } catch (err) {
         console.error('Failed to get messages', err);
       }
-    }
+    },
+    [],
+  );
 
-    getAllMessages().catch((e) => console.error(e));
+  useEffect(() => {
+    if (!room) void getRoomDetails();
+    void getAllMessages();
   }, []);
+
   return (
     <PageLayout heading={`Room: ${room?.name ? room.name : 'error'}`}>
-      <List>
+      <RoomBodyContainer>
         <button type="button" onClick={() => navigate('/lobby')}>
           Back to Lobby
         </button>
-        <h1>Room: {room?.name}</h1>
+        <ChatContainer>
+          <List>
+            {messages.map((message) => (
+              <MessageText key={message.id} message={message} />
+            ))}
+          </List>
+        </ChatContainer>
         <MessageForm />
-        {messages.map((message) => (
-          <MessageText key={message.id} message={message} />
-        ))}
-      </List>
+      </RoomBodyContainer>
     </PageLayout>
   );
 };

@@ -1,6 +1,6 @@
 import { styled } from 'styled-components';
 import { useAuth } from '../auth/use-auth.hook';
-import { RoomDetails, RoomId } from '@ws-chat/common/src';
+import { RoomDetails } from '@ws-chat/common/src';
 import { SubmitHandler, useForm } from 'react-hook-form';
 import { RoomList } from './room-list';
 import { useNavigate } from 'react-router-dom';
@@ -18,6 +18,7 @@ type RoomName = Pick<RoomDetails, 'name'>;
 export const Lobby = () => {
   const auth = useAuth();
   const navigate = useNavigate();
+  const token = auth.getToken();
   const {
     register,
     handleSubmit,
@@ -26,7 +27,6 @@ export const Lobby = () => {
 
   const handleCreateRoom: SubmitHandler<RoomName> = async (data: RoomName) => {
     try {
-      const token = auth.getToken();
       if (!token) throw new Error('Not logged in');
       const res = await fetch(`http://localhost:4000/room`, {
         method: 'POST',
@@ -52,9 +52,7 @@ export const Lobby = () => {
         {errors.name && <span>[Room Name]: {errors.name.message}</span>}
         <CreateButton type="submit">Create Room</CreateButton>
       </form>
-      <ul>
-        <RoomList />
-      </ul>
+      <RoomList />
     </>
   );
 };
