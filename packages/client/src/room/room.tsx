@@ -1,35 +1,12 @@
 import { useEffect, useMemo, useState } from 'react';
-import { MessageText } from './message-text';
-import styled from 'styled-components';
+import { ChatMessage } from './chat-message/chat-message';
 import { useNavigate, useParams } from 'react-router-dom';
 import { Message, RoomDetails } from '@ws-chat/common/src';
 import { useAuth } from '../auth/use-auth.hook';
-import { MessageForm } from './form';
+import { MessageForm } from './form/form';
 import { socket } from '..';
 import { PageLayout } from '../pages/page-layout';
-
-const List = styled.ul`
-  list-style-type: none;
-  padding-left: 0;
-  width: 100%;
-  margin: 0;
-`;
-
-const ChatContainer = styled.div`
-  overflow: scroll;
-  flex-grow: 1;
-  display: flex;
-  align-items: flex-end;
-`;
-
-const RoomBodyContainer = styled.div`
-  padding: 1rem;
-  display: flex;
-  flex-direction: column;
-  overflow: auto;
-  flex: 1 1 0;
-  justify-content: space-between;
-`;
+import { RoomBodyContainer, ChatContainer, List } from './room.styles';
 
 export const Room = () => {
   const [messages, setMessages] = useState<Message[]>([]);
@@ -86,12 +63,12 @@ export const Room = () => {
     <PageLayout heading={`Room: ${room?.name ? room.name : 'error'}`}>
       <RoomBodyContainer>
         <button type="button" onClick={() => navigate('/lobby')}>
-          Back to Lobby
+          Back
         </button>
         <ChatContainer>
           <List>
             {messages.map((message) => (
-              <MessageText key={message.id} message={message} />
+              <ChatMessage key={message.id} message={message} />
             ))}
           </List>
         </ChatContainer>

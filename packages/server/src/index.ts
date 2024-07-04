@@ -31,7 +31,7 @@ app.use(cors());
 // eslint-disable-next-line @typescript-eslint/no-misused-promises
 app.post('/messages', auth, async (req: Request, res: Response) => {
   const message = await addMessage({ db }, req.body as MessageInput);
-  io.emit('chat message', JSON.stringify(message));
+  io.emit('chat message', message);
   if (message) {
     res.status(201).send(message);
   }

@@ -1,28 +1,8 @@
 /* eslint-disable @typescript-eslint/no-misused-promises */
 import { FormEvent, useState } from 'react';
-import { useAuth } from '../auth/use-auth.hook';
+import { useAuth } from '../../auth/use-auth.hook';
 import { useParams } from 'react-router-dom';
-import { styled } from 'styled-components';
-
-const StyledInput = styled.input`
-  border: none;
-  height: 32px;
-  width: 100%;
-  padding: 0;
-`;
-
-const MessageFormContainer = styled.div`
-  background-color: gray;
-  border: 1px solid gray;
-  display: flex;
-  gap: 1px;
-  align-items: center;
-`;
-
-const StyledButton = styled.button`
-  border: none;
-  height: 32px;
-`;
+import { MessageFormContainer, StyledInput, StyledButton } from './form.styles';
 
 export const MessageForm = () => {
   const { roomId } = useParams();
