@@ -4,6 +4,7 @@ import { SubmitHandler, useForm } from 'react-hook-form';
 import { RoomList } from './room-list';
 import { useNavigate } from 'react-router-dom';
 import { CreateButton, LobbyContainer, LobbyFormContainer, RoomNameLabel } from './lobby.styles';
+import { socket } from '..';
 
 type RoomName = Pick<RoomDetails, 'name'>;
 
@@ -28,6 +29,8 @@ export const Lobby = () => {
       if (!res.ok) throw new Error(res.statusText);
 
       const response = (await res.json()) as RoomDetails;
+
+      socket.emit('create room', response.id);
 
       navigate(`/lobby/room/${response.id}`);
     } catch (error) {

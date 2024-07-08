@@ -19,6 +19,24 @@ export const RoomList = () => {
   const navigate = useNavigate();
   const token = auth.getToken();
 
+  const handleJoinRoom = async (roomId: string) => {
+    try {
+      if (!token) throw new Error('Not logged in');
+      const res = await fetch(`http://localhost:4000/room/members`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', Authorization: token },
+        body: JSON.stringify({ roomId, userId: auth.user?.id }),
+      });
+      if (!res.ok) throw new Error(res.statusText);
+
+      // socket.emit('create room', response.id);
+
+      navigate(`/lobby/room/${roomId}`);
+    } catch (error) {
+      console.error('Error submitting form:', error);
+    }
+  };
+
   useEffect(() => {
     async function getAllRooms() {
       const res = await fetch(`http://localhost:4000/rooms`, {
@@ -37,13 +55,9 @@ export const RoomList = () => {
       {rooms.length === 0 && <p>There are no rooms right now, try creating one.</p>}
       {rooms.map((r) => (
         <RoomItem key={r.id}>
-          <a
-            type="button"
-            href={`/lobby/room/${r.id}`}
-            onClick={() => navigate(`/lobby/room/${r.id}`)}
-          >
+          <button type="button" onClick={() => void handleJoinRoom(r.id)}>
             {r.name} (Member count: {r.memberCount})
-          </a>
+          </button>
         </RoomItem>
       ))}
     </List>

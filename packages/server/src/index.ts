@@ -1,5 +1,6 @@
+/* eslint-disable @typescript-eslint/no-misused-promises */
 import express, { Request, Response } from 'express';
-import { MessageInput, addMessage, getMessagesByRoom } from './messages/messages.controller';
+import { addMessage, getMessagesByRoom, MessageInput } from './messages/messages.controller';
 import { Client } from 'pg';
 import { createServer } from 'http';
 import { Server } from 'socket.io';
@@ -8,7 +9,8 @@ import { createUser, logUserIn, logUserInWithToken } from './user/user.controlle
 import { CreateUserInput, LoginUserInput } from './user/user.repository';
 import { auth } from './auth/auth.middleware';
 import { createRoom, getAllRooms, getRoom } from './rooms/rooms.controller';
-import { CreateRoomInput } from '@ws-chat/common/src';
+import { CreateRoomInput, RoomMember } from '@ws-chat/common/src';
+import { addRoomMember } from './rooms/rooms.repository';
 
 const app = express();
 const db = new Client();
@@ -38,11 +40,11 @@ app.post('/messages', auth, async (req: Request, res: Response) => {
   res.status(500).send();
 });
 
-// eslint-disable-next-line @typescript-eslint/no-misused-promises
 app.post('/room', auth, async (req: Request, res: Response) => {
   try {
     const body = req.body as CreateRoomInput;
     const result = await createRoom({ db }, body);
+    if (!result) throw new Error('Could not create room');
 
     res.status(200).send(result);
     return;
@@ -56,27 +58,41 @@ app.post('/room', auth, async (req: Request, res: Response) => {
   }
 });
 
-// eslint-disable-next-line @typescript-eslint/no-misused-promises
+app.post('/room/members', auth, async (req: Request, res: Response) => {
+  try {
+    const body = req.body as RoomMember;
+    const result = await addRoomMember({ db }, body);
+    if (!result) throw new Error('Could not create room');
+
+    res.status(200).send(result);
+    return;
+  } catch (err) {
+    if (err instanceof Error) {
+      res.status(500).send({ error: err.message });
+      return;
+    }
+    res.status(500).send({ error: 'Unexpected error' });
+    return;
+  }
+});
+
 app.get('/rooms', auth, async (_: Request, res: Response) => {
   const rooms = await getAllRooms({ db });
   res.send(rooms);
 });
 
-// eslint-disable-next-line @typescript-eslint/no-misused-promises
 app.get('/rooms/:roomId', auth, async (req: Request, res: Response) => {
   const { roomId } = req.params;
   const room = await getRoom({ db }, roomId);
   res.send(room);
 });
 
-// eslint-disable-next-line @typescript-eslint/no-misused-promises
 app.get('/rooms/:roomId/messages', auth, async (req: Request, res: Response) => {
   const { roomId } = req.params;
   const room = await getMessagesByRoom({ db }, roomId);
   res.send(room);
 });
 
-// eslint-disable-next-line @typescript-eslint/no-misused-promises
 app.post('/user/new', async (req: Request, res: Response) => {
   try {
     const body = req.body as CreateUserInput;
@@ -94,7 +110,6 @@ app.post('/user/new', async (req: Request, res: Response) => {
   }
 });
 
-// eslint-disable-next-line @typescript-eslint/no-misused-promises
 app.post('/user/login', async (req: Request, res: Response) => {
   const userDetails = await logUserIn({ db }, req.body as LoginUserInput);
   if (userDetails) {
@@ -105,7 +120,6 @@ app.post('/user/login', async (req: Request, res: Response) => {
   return;
 });
 
-// eslint-disable-next-line @typescript-eslint/no-misused-promises
 app.post('/user/verify', async (req: Request, res: Response) => {
   const userDetails = await logUserInWithToken({ db }, req.body as { token: string });
   if (userDetails) {
@@ -118,6 +132,10 @@ app.post('/user/verify', async (req: Request, res: Response) => {
 
 io.on('connection', (socket) => {
   console.log('a user connected');
+  // socket.on('join room', async (socket: string) => {
+  //   console.log('CREATING A ROOM: ', room);
+  //   await socket.join(room);
+  // });
   socket.on('disconnect', () => {
     console.log('user disconnected');
   });

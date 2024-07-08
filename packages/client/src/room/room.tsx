@@ -4,9 +4,9 @@ import { useNavigate, useParams } from 'react-router-dom';
 import { Message, RoomDetails } from '@ws-chat/common/src';
 import { useAuth } from '../auth/use-auth.hook';
 import { MessageForm } from './form/form';
-import { socket } from '..';
 import { PageLayout } from '../pages/page-layout';
 import { RoomBodyContainer, ChatContainer, List, BackButton } from './room.styles';
+import { socket } from '..';
 
 export const Room = () => {
   const [messages, setMessages] = useState<Message[]>([]);
@@ -17,9 +17,12 @@ export const Room = () => {
   const token = auth.getToken();
 
   socket.on('chat message', (msg: string) => {
+    console.log('RECEIVING: ', msg);
     const newMessage = JSON.parse(msg) as Message;
     setMessages([...messages, newMessage]);
   });
+
+  // socket.emit('join room', auth.user?.id);
 
   const getRoomDetails = useMemo(
     () => async () => {
@@ -59,11 +62,16 @@ export const Room = () => {
     void getAllMessages();
   }, []);
 
+  const handleLeaveRoom = () => {
+    socket.disconnect();
+    navigate('/lobby');
+  };
+
   return (
     <PageLayout heading={`Room: ${room?.name ? room.name : 'error'}`}>
       <RoomBodyContainer>
-        <BackButton type="button" onClick={() => navigate('/lobby')}>
-          {'◀ Back'}
+        <BackButton type="button" onClick={handleLeaveRoom}>
+          {'◀ Leave'}
         </BackButton>
         <ChatContainer>
           <List>

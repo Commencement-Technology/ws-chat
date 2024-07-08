@@ -5,6 +5,7 @@ import {
   RoomDetails,
   RoomDetailsWithMemberCount,
   RoomId,
+  RoomMember,
 } from '@ws-chat/common/src';
 
 export const insertRoom = async (
@@ -72,5 +73,27 @@ export const getRoomById = async ({ db }: Context, roomId: string): Promise<Room
   } catch (error) {
     console.error(error);
     return null;
+  }
+};
+
+export const addRoomMember = async (
+  { db }: Context,
+  { roomId, userId }: RoomMember,
+): Promise<boolean> => {
+  try {
+    const sql = `
+          INSERT INTO room_members (room_id, user_id)
+          VALUES $1, $2
+          RETURNING *
+        `;
+
+    const values = [roomId, userId];
+
+    const { rowCount } = await db.query(sql, values);
+
+    return rowCount === 1 ? true : false;
+  } catch (error) {
+    console.error(error);
+    return false;
   }
 };
