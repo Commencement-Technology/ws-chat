@@ -34,6 +34,7 @@ export const RoomList = () => {
 
   return (
     <List>
+      {rooms.length === 0 && <p>There are no rooms right now, try creating one.</p>}
       {rooms.map((r) => (
         <RoomItem key={r.id}>
           <a

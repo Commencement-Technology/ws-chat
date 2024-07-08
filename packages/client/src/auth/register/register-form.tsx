@@ -1,13 +1,14 @@
 import { SubmitHandler, useForm } from 'react-hook-form';
-import { RegisterFormContainer } from './register-form.styles';
 import { useNavigate } from 'react-router-dom';
 import { UserDetails } from '@ws-chat/common/src/index';
+import { FormContainer } from '../form.styles';
 
 interface RegisterFormInputs {
   email: string;
   name: string;
   password: string;
 }
+
 export const RegisterForm = () => {
   const navigate = useNavigate();
   const {
@@ -33,7 +34,7 @@ export const RegisterForm = () => {
   };
 
   return (
-    <RegisterFormContainer onSubmit={(e) => void handleSubmit(onSubmit)(e)}>
+    <FormContainer onSubmit={(e) => void handleSubmit(onSubmit)(e)}>
       <label htmlFor="email">Email</label>
       <input {...register('email', { required: true })} />
       <label htmlFor="name">Name</label>
@@ -43,6 +44,6 @@ export const RegisterForm = () => {
       {errors.email && <span>[Email]: {errors.email.message}</span>}
       {errors.password && <span>[Password]: {errors.password.message}</span>}
       <input type="submit" />
-    </RegisterFormContainer>
+    </FormContainer>
   );
 };

@@ -1,17 +1,9 @@
-import { styled } from 'styled-components';
 import { useAuth } from '../auth/use-auth.hook';
 import { RoomDetails } from '@ws-chat/common/src';
 import { SubmitHandler, useForm } from 'react-hook-form';
 import { RoomList } from './room-list';
 import { useNavigate } from 'react-router-dom';
-
-const CreateButton = styled.button`
-  background-color: lightgreen;
-  border: none;
-  padding: 0.4rem 0.6rem;
-  cursor: pointer;
-  border-radius: 4px;
-`;
+import { CreateButton, LobbyContainer, LobbyFormContainer, RoomNameLabel } from './lobby.styles';
 
 type RoomName = Pick<RoomDetails, 'name'>;
 
@@ -44,15 +36,19 @@ export const Lobby = () => {
   };
 
   return (
-    <>
+    <LobbyContainer>
       <h3>Welcome to the Lobby!</h3>
-      <form onSubmit={(e) => void handleSubmit(handleCreateRoom)(e)}>
-        <label htmlFor="name">Room name</label>
-        <input {...register('name', { required: true })} type="text" />
+      <LobbyFormContainer onSubmit={(e) => void handleSubmit(handleCreateRoom)(e)}>
+        <RoomNameLabel htmlFor="name">Room name</RoomNameLabel>
+        <input
+          placeholder="Enter a room name"
+          {...register('name', { required: true })}
+          type="text"
+        />
         {errors.name && <span>[Room Name]: {errors.name.message}</span>}
         <CreateButton type="submit">Create Room</CreateButton>
-      </form>
+      </LobbyFormContainer>
       <RoomList />
-    </>
+    </LobbyContainer>
   );
 };

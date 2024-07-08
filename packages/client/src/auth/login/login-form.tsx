@@ -1,5 +1,5 @@
 import { SubmitHandler, useForm } from 'react-hook-form';
-import { LoginFormContainer } from './login-form.styles';
+import { FormContainer } from '../form.styles';
 import { useNavigate } from 'react-router-dom';
 import { Token, UserDetails } from '@ws-chat/common/src/index';
 import { useAuth } from '../use-auth.hook';
@@ -36,7 +36,7 @@ export const LoginForm = () => {
   };
 
   return (
-    <LoginFormContainer onSubmit={(e) => void handleSubmit(onSubmit)(e)}>
+    <FormContainer onSubmit={(e) => void handleSubmit(onSubmit)(e)}>
       <label htmlFor="email">Email</label>
       <input {...register('email', { required: true })} />
       <label htmlFor="password">Password</label>
@@ -44,6 +44,6 @@ export const LoginForm = () => {
       {errors.email && <span>[Email]: {errors.email.message}</span>}
       {errors.password && <span>[Password]: {errors.password.message}</span>}
       <input type="submit" />
-    </LoginFormContainer>
+    </FormContainer>
   );
 };

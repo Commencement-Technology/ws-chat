@@ -21,4 +21,15 @@ export const RoomBodyContainer = styled.div`
   overflow: auto;
   flex: 1 1 0;
   justify-content: space-between;
+  height: 500px;
+  width: 690px;
+`;
+
+export const BackButton = styled.button`
+  background-color: #afb3f7;
+  border: none;
+  padding: 0.4rem 0.6rem;
+  cursor: pointer;
+  border-radius: 4px;
+  align-self: flex-start;
 `;

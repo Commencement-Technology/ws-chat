@@ -6,7 +6,7 @@ import { useAuth } from '../auth/use-auth.hook';
 import { MessageForm } from './form/form';
 import { socket } from '..';
 import { PageLayout } from '../pages/page-layout';
-import { RoomBodyContainer, ChatContainer, List } from './room.styles';
+import { RoomBodyContainer, ChatContainer, List, BackButton } from './room.styles';
 
 export const Room = () => {
   const [messages, setMessages] = useState<Message[]>([]);
@@ -62,9 +62,9 @@ export const Room = () => {
   return (
     <PageLayout heading={`Room: ${room?.name ? room.name : 'error'}`}>
       <RoomBodyContainer>
-        <button type="button" onClick={() => navigate('/lobby')}>
-          Back
-        </button>
+        <BackButton type="button" onClick={() => navigate('/lobby')}>
+          {'◀ Back'}
+        </BackButton>
         <ChatContainer>
           <List>
             {messages.map((message) => (
