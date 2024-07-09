@@ -38,7 +38,8 @@ app.use(cors());
 // eslint-disable-next-line @typescript-eslint/no-misused-promises
 app.post('/messages', auth, async (req: Request, res: Response) => {
   const message = await addMessage({ db }, req.body as MessageInput);
-  io.emit('chat message', message);
+  if (!message) throw new Error('Message creation failed');
+  io.to(message.roomId).emit('chat message', message);
   if (message) {
     res.status(201).send(message);
   }
@@ -156,10 +157,15 @@ app.post('/user/verify', async (req: Request, res: Response) => {
 
 io.on('connection', (socket) => {
   console.log('a user connected');
-  // socket.on('join room', async (socket: string) => {
-  //   console.log('CREATING A ROOM: ', room);
-  //   await socket.join(room);
-  // });
+  socket.on('create room', async (roomId: string) => {
+    await socket.join(roomId);
+  });
+  socket.on('join room', async (roomId: string) => {
+    await socket.join(roomId);
+  });
+  socket.on('leave room', async (roomId: string) => {
+    await socket.leave(roomId);
+  });
   socket.on('disconnect', () => {
     console.log('user disconnected');
   });

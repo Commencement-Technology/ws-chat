@@ -7,6 +7,7 @@ import { MessageForm } from './form/form';
 import { PageLayout } from '../pages/page-layout';
 import { RoomBodyContainer, ChatContainer, List, BackButton } from './room.styles';
 import { socket } from '..';
+import { getMessages } from '../api/messages';
 
 export const Room = () => {
   const [messages, setMessages] = useState<Message[]>([]);
@@ -19,8 +20,6 @@ export const Room = () => {
   socket.on('chat message', (msg: Message) => {
     setMessages([...messages, msg]);
   });
-
-  // socket.emit('join room', auth.user?.id);
 
   const getRoomDetails = useMemo(
     () => async () => {
@@ -40,17 +39,9 @@ export const Room = () => {
 
   const getAllMessages = useMemo(
     () => async () => {
-      try {
-        if (!roomId) throw new Error('Room ID missing');
-        const res = await fetch(`http://localhost:4000/rooms/${roomId}/messages`, {
-          headers: { 'Content-Type': 'application/json', Authorization: token ?? '' },
-        });
-        if (!res.ok) throw new Error(res.statusText);
-        const response = (await res.json()) as Message[];
-        setMessages(response);
-      } catch (err) {
-        console.error('Failed to get messages', err);
-      }
+      if (!roomId || !token) throw new Error('Failed to make call');
+      const messages = await getMessages(roomId, token);
+      setMessages(messages);
     },
     [],
   );
@@ -72,7 +63,8 @@ export const Room = () => {
       );
       if (!res.ok) throw new Error(res.statusText);
 
-      socket.disconnect();
+      socket.emit('leave room', roomId);
+
       navigate('/lobby');
     } catch (err) {
       console.error('Failed to get messages', err);

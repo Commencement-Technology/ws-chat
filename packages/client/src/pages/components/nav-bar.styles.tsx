@@ -17,21 +17,21 @@ export const NavBarItems = styled.div`
 
 export const ButtonGroup = styled.div`
   display: flex;
-  gap: 4px;
+  gap: 8px;
+  align-items: center;
 `;
 
 export const LoggedInUserDetail = styled.p`
   font-size: 0.8rem;
-  color: #171a21;
   max-width: 8rem;
   text-align: right;
 `;
 
 export const AuthButton = styled.button`
   background-color: #afb3f7;
-  color: #171a21;
   border: none;
   padding: 0.4rem 0.6rem;
   cursor: pointer;
   border-radius: 4px;
+  height: fit-content;
 `;

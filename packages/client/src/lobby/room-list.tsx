@@ -3,6 +3,7 @@ import { useEffect, useState } from 'react';
 import styled from 'styled-components';
 import { useAuth } from '../auth/use-auth.hook';
 import { useNavigate } from 'react-router-dom';
+import { socket } from '..';
 
 const List = styled.ul`
   list-style-type: none;
@@ -29,7 +30,7 @@ export const RoomList = () => {
       });
       if (!res.ok) throw new Error(res.statusText);
 
-      // socket.emit('create room', response.id);
+      socket.emit('join room', roomId);
 
       navigate(`/lobby/room/${roomId}`);
     } catch (error) {
