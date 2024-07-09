@@ -22,10 +22,10 @@ export const RoomList = () => {
   const handleJoinRoom = async (roomId: string) => {
     try {
       if (!token) throw new Error('Not logged in');
-      const res = await fetch(`http://localhost:4000/room/members`, {
+      const res = await fetch(`http://localhost:4000/rooms/${roomId}/members`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json', Authorization: token },
-        body: JSON.stringify({ roomId, userId: auth.user?.id }),
+        body: JSON.stringify({ id: auth.user?.id }),
       });
       if (!res.ok) throw new Error(res.statusText);
 

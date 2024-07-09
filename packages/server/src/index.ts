@@ -8,9 +8,14 @@ import cors from 'cors';
 import { createUser, logUserIn, logUserInWithToken } from './user/user.controller';
 import { CreateUserInput, LoginUserInput } from './user/user.repository';
 import { auth } from './auth/auth.middleware';
-import { createRoom, getAllRooms, getRoom } from './rooms/rooms.controller';
-import { CreateRoomInput, RoomMember } from '@ws-chat/common/src';
-import { addRoomMember } from './rooms/rooms.repository';
+import {
+  addMember,
+  createRoom,
+  getAllRooms,
+  getRoom,
+  removeMember,
+} from './rooms/rooms.controller';
+import { CreateRoomInput, UserDetails } from '@ws-chat/common/src';
 
 const app = express();
 const db = new Client();
@@ -58,11 +63,30 @@ app.post('/room', auth, async (req: Request, res: Response) => {
   }
 });
 
-app.post('/room/members', auth, async (req: Request, res: Response) => {
+app.post('/rooms/:roomId/members', auth, async (req: Request, res: Response) => {
   try {
-    const body = req.body as RoomMember;
-    const result = await addRoomMember({ db }, body);
-    if (!result) throw new Error('Could not create room');
+    const { roomId } = req.params;
+    const { id: userId } = req.body as UserDetails;
+    const result = await addMember({ db }, { roomId, userId });
+    if (!result) throw new Error('Could not add member to room');
+
+    res.status(200).send(result);
+    return;
+  } catch (err) {
+    if (err instanceof Error) {
+      res.status(500).send({ error: err.message });
+      return;
+    }
+    res.status(500).send({ error: 'Unexpected error' });
+    return;
+  }
+});
+
+app.delete('/rooms/:roomId/members/:userId', auth, async (req: Request, res: Response) => {
+  try {
+    const { roomId, userId } = req.params;
+    const result = await removeMember({ db }, { roomId, userId });
+    if (!result) throw new Error('Could not remove member from room');
 
     res.status(200).send(result);
     return;

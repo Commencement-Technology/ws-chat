@@ -16,10 +16,8 @@ export const Room = () => {
   const auth = useAuth();
   const token = auth.getToken();
 
-  socket.on('chat message', (msg: string) => {
-    console.log('RECEIVING: ', msg);
-    const newMessage = JSON.parse(msg) as Message;
-    setMessages([...messages, newMessage]);
+  socket.on('chat message', (msg: Message) => {
+    setMessages([...messages, msg]);
   });
 
   // socket.emit('join room', auth.user?.id);
@@ -60,17 +58,31 @@ export const Room = () => {
   useEffect(() => {
     if (!room) void getRoomDetails();
     void getAllMessages();
-  }, []);
+  }, [room]);
 
-  const handleLeaveRoom = () => {
-    socket.disconnect();
-    navigate('/lobby');
+  const handleLeaveRoom = async () => {
+    try {
+      if (!roomId) throw new Error('Room ID missing');
+      const res = await fetch(
+        `http://localhost:4000/rooms/${roomId}/members/${auth?.user?.id ?? ''}`,
+        {
+          headers: { 'Content-Type': 'application/json', Authorization: token ?? '' },
+          method: 'DELETE',
+        },
+      );
+      if (!res.ok) throw new Error(res.statusText);
+
+      socket.disconnect();
+      navigate('/lobby');
+    } catch (err) {
+      console.error('Failed to get messages', err);
+    }
   };
 
   return (
     <PageLayout heading={`Room: ${room?.name ? room.name : 'error'}`}>
       <RoomBodyContainer>
-        <BackButton type="button" onClick={handleLeaveRoom}>
+        <BackButton type="button" onClick={() => void handleLeaveRoom()}>
           {'◀ Leave'}
         </BackButton>
         <ChatContainer>

@@ -1,4 +1,10 @@
-import { addRoomMember, getRoomById, getRooms, insertRoom } from './rooms.repository';
+import {
+  addRoomMember,
+  getRoomById,
+  getRooms,
+  insertRoom,
+  removeRoomMember,
+} from './rooms.repository';
 import { Context } from '../db/connection';
 import {
   CreateRoomInput,
@@ -19,3 +25,6 @@ export const createRoom = async (ctx: Context, room: CreateRoomInput): Promise<R
 
 export const addMember = async (ctx: Context, details: RoomMember): Promise<boolean> =>
   await addRoomMember(ctx, details);
+
+export const removeMember = async (ctx: Context, details: RoomMember): Promise<boolean> =>
+  await removeRoomMember(ctx, details);

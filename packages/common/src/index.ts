@@ -6,7 +6,7 @@ export interface User {
   readonly created: string;
 }
 
-export type UserId = Pick<User, 'id'>;
+export type UserId = User['id'];
 
 export interface Token {
   readonly token: string;

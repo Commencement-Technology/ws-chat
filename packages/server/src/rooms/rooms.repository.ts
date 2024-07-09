@@ -46,7 +46,7 @@ export const getRooms = async ({ db }: Context): Promise<RoomDetailsWithMemberCo
   try {
     const sql = `
       SELECT r.id, r.name, r.owner, count(rm.user_id) as "memberCount" FROM rooms r
-      INNER JOIN room_members rm on r.id = rm.room_id
+      LEFT JOIN room_members rm on r.id = rm.room_id
       GROUP BY r.id
     `;
 
@@ -82,10 +82,36 @@ export const addRoomMember = async (
 ): Promise<boolean> => {
   try {
     const sql = `
-          INSERT INTO room_members (room_id, user_id)
-          VALUES $1, $2
-          RETURNING *
-        `;
+        INSERT INTO room_members (room_id, user_id)
+        VALUES ($1, $2)
+        ON CONFLICT (room_id, user_id)
+        DO UPDATE SET
+          room_id = EXCLUDED.room_id,
+          user_id = EXCLUDED.user_id
+        RETURNING *;
+      `;
+
+    const values = [roomId, userId];
+
+    const { rowCount } = await db.query(sql, values);
+
+    return rowCount === 1 ? true : false;
+  } catch (error) {
+    console.error(error);
+    return false;
+  }
+};
+
+export const removeRoomMember = async (
+  { db }: Context,
+  { roomId, userId }: RoomMember,
+): Promise<boolean> => {
+  try {
+    const sql = `
+        DELETE FROM room_members
+        WHERE room_id = $1 AND user_id = $2
+        RETURNING *;
+      `;
 
     const values = [roomId, userId];
 
