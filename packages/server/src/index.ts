@@ -16,16 +16,14 @@ import {
   removeMember,
 } from './rooms/rooms.controller';
 import { CreateRoomInput, UserDetails } from '@ws-chat/common/src';
+import { emitWithRetry } from './web-socket/emit-with-retry';
 
 const app = express();
 const db = new Client();
 const server = createServer(app);
 const io = new Server(server, {
   connectionStateRecovery: {},
-  cors: {
-    origin: '*',
-    methods: ['GET', 'POST'],
-  },
+  cors: { origin: '*', methods: ['GET', 'POST'] },
 });
 
 async function clientConnect() {
@@ -38,13 +36,17 @@ app.use(cors());
 
 // eslint-disable-next-line @typescript-eslint/no-misused-promises
 app.post('/messages', auth, async (req: Request, res: Response) => {
-  const message = await addMessage({ db }, req.body as MessageInput);
-  if (!message) throw new Error('Message creation failed');
-  io.to(message.roomId).emit('chat message', message);
-  if (message) {
+  try {
+    const message = await addMessage({ db }, req.body as MessageInput);
+    if (!message) throw new Error('Message creation failed');
+    // io.to(message.roomId).emit('chat message', message); old
+    // emit event to send message data to connected clients
+    await emitWithRetry(io, message.roomId, 'chat message', message, 3);
+
     res.status(201).send(message);
+  } catch (err) {
+    res.status(500).send();
   }
-  res.status(500).send();
 });
 
 app.post('/room', auth, async (req: Request, res: Response) => {

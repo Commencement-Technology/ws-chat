@@ -18,8 +18,9 @@ export const Room = () => {
   const auth = useAuth();
   const token = auth.getToken();
 
-  socket.on('chat message', (msg: Message) => {
+  socket.on('chat message', (msg: Message, ack: (response: boolean) => void) => {
     setMessages([...messages, msg]);
+    if (ack) ack(true);
   });
 
   const getRoomDetails = useMemo(
