@@ -32,11 +32,6 @@ export const Lobby = () => {
       const response = (await res.json()) as RoomDetails;
 
       // socket.emit('create room', response.id);
-      // socket
-      //   .timeout(5000)
-      //   .emit('create room', response.id, (err: any, response: { status: string }) => {
-      //     if (!err) console.log(response.status); // 'ok'
-      //   });
       emitAck(socket, 'create room', response.id);
 
       navigate(`/lobby/room/${response.id}`);
