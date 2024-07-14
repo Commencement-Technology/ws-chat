@@ -21,6 +21,7 @@ const app = express();
 const db = new Client();
 const server = createServer(app);
 const io = new Server(server, {
+  connectionStateRecovery: {},
   cors: {
     origin: '*',
     methods: ['GET', 'POST'],
@@ -155,16 +156,36 @@ app.post('/user/verify', async (req: Request, res: Response) => {
   return;
 });
 
+interface EventResponse {
+  status: string;
+}
+
 io.on('connection', (socket) => {
   console.log('a user connected');
-  socket.on('create room', async (roomId: string) => {
+  // socket.on('create room', async (roomId: string) => {
+  //   await socket.join(roomId);
+  // });
+  socket.on(
+    'create room',
+    async (roomId: string, callback: ({ status }: EventResponse) => void) => {
+      await socket.join(roomId);
+      callback({ status: 'room create acknowledged' });
+    },
+  );
+  // socket.on('join room', async (roomId: string) => {
+  //   await socket.join(roomId);
+  // });
+  socket.on('join room', async (roomId: string, callback: ({ status }: EventResponse) => void) => {
     await socket.join(roomId);
+    callback({ status: 'room join acknowledged' });
   });
-  socket.on('join room', async (roomId: string) => {
-    await socket.join(roomId);
-  });
-  socket.on('leave room', async (roomId: string) => {
+
+  // socket.on('leave room', async (roomId: string) => {
+  //   await socket.leave(roomId);
+  // });
+  socket.on('leave room', async (roomId: string, callback: ({ status }: EventResponse) => void) => {
     await socket.leave(roomId);
+    callback({ status: 'room leave acknowledged' });
   });
   socket.on('disconnect', () => {
     console.log('user disconnected');

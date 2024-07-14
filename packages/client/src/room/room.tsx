@@ -8,6 +8,7 @@ import { PageLayout } from '../pages/page-layout';
 import { RoomBodyContainer, ChatContainer, List, BackButton } from './room.styles';
 import { socket } from '..';
 import { getMessages } from '../api/messages';
+import { emitAck } from '../api/web-socket';
 
 export const Room = () => {
   const [messages, setMessages] = useState<Message[]>([]);
@@ -63,7 +64,8 @@ export const Room = () => {
       );
       if (!res.ok) throw new Error(res.statusText);
 
-      socket.emit('leave room', roomId);
+      // socket.emit('leave room', roomId); old
+      emitAck(socket, 'leave room', roomId);
 
       navigate('/lobby');
     } catch (err) {
