@@ -42,3 +42,7 @@ export interface Message {
   readonly roomId: string;
   readonly user: UserDetails;
 }
+
+export interface EventResponse {
+  status: string;
+}

@@ -31,8 +31,8 @@ export const Lobby = () => {
 
       const response = (await res.json()) as RoomDetails;
 
-      // socket.emit('create room', response.id);
-      emitAck(socket, 'create room', response.id);
+      // socket.emit('join room', response.id);
+      emitAck(socket, 'join room', response.id);
 
       navigate(`/lobby/room/${response.id}`);
     } catch (error) {

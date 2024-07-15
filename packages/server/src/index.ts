@@ -15,7 +15,7 @@ import {
   getRoom,
   removeMember,
 } from './rooms/rooms.controller';
-import { CreateRoomInput, UserDetails } from '@ws-chat/common/src';
+import { CreateRoomInput, EventResponse, UserDetails } from '@ws-chat/common/src';
 import { emitWithRetry } from './web-socket/emit-with-retry';
 
 const app = express();
@@ -158,40 +158,19 @@ app.post('/user/verify', async (req: Request, res: Response) => {
   return;
 });
 
-interface EventResponse {
-  status: string;
-}
-
 io.on('connection', (socket) => {
   console.log('a user connected');
-  // socket.on('create room', async (roomId: string) => {
-  //   await socket.join(roomId);
-  // });
-  socket.on(
-    'create room',
-    async (roomId: string, callback: ({ status }: EventResponse) => void) => {
-      await socket.join(roomId);
-      callback({ status: 'room create acknowledged' });
-    },
-  );
-  // socket.on('join room', async (roomId: string) => {
-  //   await socket.join(roomId);
-  // });
+
   socket.on('join room', async (roomId: string, callback: ({ status }: EventResponse) => void) => {
     await socket.join(roomId);
     callback({ status: 'room join acknowledged' });
   });
-
-  // socket.on('leave room', async (roomId: string) => {
-  //   await socket.leave(roomId);
-  // });
   socket.on('leave room', async (roomId: string, callback: ({ status }: EventResponse) => void) => {
     await socket.leave(roomId);
     callback({ status: 'room leave acknowledged' });
   });
-  socket.on('disconnect', () => {
-    console.log('user disconnected');
-  });
+
+  socket.on('disconnect', () => console.log('user disconnected'));
 });
 
 void clientConnect();
