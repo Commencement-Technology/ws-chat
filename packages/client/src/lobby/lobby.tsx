@@ -5,7 +5,6 @@ import { RoomList } from './room-list';
 import { useNavigate } from 'react-router-dom';
 import { CreateButton, LobbyContainer, LobbyFormContainer, RoomNameLabel } from './lobby.styles';
 import { socket } from '..';
-import { emitAck } from '../api/web-socket';
 
 type RoomName = Pick<RoomDetails, 'name'>;
 
@@ -31,8 +30,7 @@ export const Lobby = () => {
 
       const response = (await res.json()) as RoomDetails;
 
-      // socket.emit('join room', response.id);
-      emitAck(socket, 'join room', response.id);
+      socket.emit('join room', response.id);
 
       navigate(`/lobby/room/${response.id}`);
     } catch (error) {

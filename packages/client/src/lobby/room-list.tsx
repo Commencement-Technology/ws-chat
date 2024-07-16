@@ -4,7 +4,6 @@ import styled from 'styled-components';
 import { useAuth } from '../auth/use-auth.hook';
 import { useNavigate } from 'react-router-dom';
 import { socket } from '..';
-import { emitAck } from '../api/web-socket';
 
 const List = styled.ul`
   list-style-type: none;
@@ -31,8 +30,7 @@ export const RoomList = () => {
       });
       if (!res.ok) throw new Error(res.statusText);
 
-      // socket.emit('join room', roomId);
-      emitAck(socket, 'join room', roomId);
+      socket.emit('join room', roomId);
 
       navigate(`/lobby/room/${roomId}`);
     } catch (error) {

@@ -8,7 +8,10 @@ import { Router } from './pages/router';
 import { BrowserRouter } from 'react-router-dom';
 import { AuthProvider } from './auth/auth.provider';
 
-export const socket = io('ws://localhost:4000');
+export const socket = io('ws://localhost:4000', {
+  ackTimeout: 10000,
+  retries: 3,
+});
 
 socket.on('connect', () => {
   console.log('WebSocket connected');
