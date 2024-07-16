@@ -39,9 +39,10 @@ app.post('/messages', auth, async (req: Request, res: Response) => {
   try {
     const message = await addMessage({ db }, req.body as MessageInput);
     if (!message) throw new Error('Message creation failed');
-    // io.to(message.roomId).emit('chat message', message); old
+
     // emit event to send message data to connected clients
-    await emitWithRetry(io, message.roomId, 'chat message', message, 3);
+    // io.to(message.roomId).emit('chat message', message); old
+    await emitWithRetry(io, message.roomId, 'chat message', message);
 
     res.status(201).send(message);
   } catch (err) {

@@ -1,7 +1,7 @@
 import { Message } from '@ws-chat/common/src';
 import { Server } from 'socket.io';
 
-const RETRY_INTERVAL = 5000; // Time in milliseconds to wait before retrying
+const RETRY_INTERVAL = 5000;
 const MAX_RETRIES = 3;
 
 export const emitWithRetry = async (
